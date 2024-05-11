@@ -1,5 +1,6 @@
+const API_ENDPOINT = "https://api.nstack.in/v1/todos";
+
 $(document).ready(function () {
-  // Code to run when the document is ready
   getTasks(); // Call the getTasks function
 
   $("#new-task-btn").click(function () {
@@ -71,96 +72,105 @@ $(document).ready(function () {
   });
 });
 
-const createTask = (taskName, taskDescription) => {
-  // Make a POST request to create a new task using the API
-  $.ajax({
-    url: "https://api.nstack.in/v1/todos",
-    method: "POST",
-    data: {
-      title: taskName,
-      description: taskDescription,
-    },
-    success: function (response) {
-      console.log("Task created successfully:", response);
-      getTasks();
-    },
-    error: function (error) {
-      console.error("Error creating task:", error);
-      // Handle the error, like displaying an error message
-    },
-  });
-};
-
 const getTasks = async () => {
-  // Make a GET request to fetch all tasks using the API
-  $.ajax({
-    url: "https://api.nstack.in/v1/todos",
-    method: "GET",
-    success: function (response) {
-      if (response.items.length === 0) {
-        $(".default-text").show();
-        $(".task-list").addClass("hidden");
-      } else {
-        $(".default-text").hide();
-        $(".task-list").removeClass("hidden");
+  $("#loading-spinner").show(); // Show the loading spinner
+  $(".default-text").hide(); // Hide the default text
 
-        $(".task-list").empty();
+  try {
+    const response = await fetch(API_ENDPOINT);
+    const tasks = await response.json();
 
-        // Loop through the tasks and display them in the UI
-        response.items.forEach((task) => {
-          var taskCard = `
-            <div class="card" data-task-id="${task._id}">
-              <div class="card-body">
-                <h5 class="card-title">${task.title}</h5>
-                <p class="card-text">${task.description}</p>
-              </div>
-              <div class="card-footer">
-                <button data-task-id="${task._id}" class="btn btn-primary edit-task-btn">Edit</button>
-                <button data-task-id="${task._id}" class="btn btn-danger delete-task-btn">Delete</button>
-              </div>
+    if (tasks.items.length === 0) {
+      $(".default-text").show(); // Show the default text if no tasks are found
+      $("#task-list").addClass("hidden");
+    } else {
+      $(".default-text").hide(); // Hide the default text if tasks are found
+      $("#task-list").empty();
+
+      tasks.items.forEach((task) => {
+        const taskCard = `
+          <div class="card" data-task-id="${task._id}">
+            <div class="card-body">
+              <h5 class="card-title">${task.title}</h5>
+              <p class="card-text">${task.description}</p>
             </div>
-          `;
-          $(".task-list").append(taskCard);
-        });
-      }
-    },
-    error: function (error) {
-      console.error("Error fetching tasks:", error);
-      // Handle the error, like displaying an error message
-    },
-  });
+            <div class="card-footer">
+              <button data-task-id="${task._id}" class="btn btn-primary edit-task-btn">Edit</button>
+              <button data-task-id="${task._id}" class="btn btn-danger delete-task-btn">Delete</button>
+            </div>
+          </div>
+        `;
+        $("#task-list").append(taskCard);
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+  } finally {
+    $("#loading-spinner").hide(); // Hide the loading spinner
+    $("#task-list").removeClass("hidden");
+  }
 };
 
-const updateTask = (taskId, taskName, taskDescription) => {
-  $.ajax({
-    url: `https://api.nstack.in/v1/todos/${taskId}`,
-    method: "PUT",
-    data: {
-      title: taskName,
-      description: taskDescription,
-    },
-    success: function (response) {
-      console.log("Task updated successfully:", response);
-      getTasks();
-    },
-    error: function (error) {
-      console.error("Error updating task:", error);
-    },
-  });
+const createTask = async (taskName, taskDescription) => {
+  $(".default-text").hide(); // Hide the default text
+  $("#loading-spinner").show(); // Show the loading spinner
+  $("#task-list").addClass("hidden");
+
+  try {
+    const response = await fetch(API_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: taskName, description: taskDescription }),
+    });
+    const task = await response.json();
+    console.log("Task created successfully:", task);
+    getTasks();
+  } catch (error) {
+    console.error("Error creating task:", error);
+    // Handle the error, like displaying an error message
+  } finally {
+    $("#loading-spinner").hide(); // Hide the loading spinner
+  }
 };
 
-const deleteTask = (taskId) => {
-  // Make a DELETE request to delete a task using the API
-  $.ajax({
-    url: `https://api.nstack.in/v1/todos/${taskId}`,
-    method: "DELETE",
-    success: function (response) {
-      console.log("Task deleted successfully:", response);
-      getTasks();
-    },
-    error: function (error) {
-      console.error("Error deleting task:", error);
-      // Handle the error, like displaying an error message
-    },
-  });
+const updateTask = async (taskId, taskName, taskDescription) => {
+  $(".default-text").hide(); // Hide the default text
+  $("#loading-spinner").show(); // Show the loading spinner
+  $("#task-list").addClass("hidden");
+
+  try {
+    const response = await fetch(`${API_ENDPOINT}/${taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: taskName, description: taskDescription }),
+    });
+    const task = await response.json();
+    console.log("Task updated successfully:", task);
+    getTasks();
+  } catch (error) {
+    console.error("Error updating task:", error);
+    // Handle the error, like displaying an error message
+  } finally {
+    $("#loading-spinner").hide(); // Hide the loading spinner
+  }
+};
+
+const deleteTask = async (taskId) => {
+  $(".default-text").hide(); // Hide the default text
+  $("#loading-spinner").show(); // Show the loading spinner
+  $("#task-list").addClass("hidden");
+
+  try {
+    const response = await fetch(`${API_ENDPOINT}/${taskId}`, {
+      method: "DELETE",
+    });
+    const task = await response.json();
+    console.log("Task deleted successfully:", task);
+    getTasks();
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    // Handle the error, like displaying an error message
+  } finally {
+    $("#loading-spinner").hide(); // Hide the loading spinner
+  }
 };

@@ -30,7 +30,7 @@
 
     <!-- Some Custom CSS -->
     <style>
-      .task-list {
+      #task-list {
         width: 100%;
         display: flex;
         align-items: center;
@@ -40,11 +40,11 @@
         flex-wrap: wrap;
       }
 
-      .task-list.hidden {
+      #task-list.hidden {
         display: none;
       }
 
-      .task-list .card {
+      #task-list .card {
         height: fit-content;
         min-width: 350px;
       }
@@ -54,7 +54,16 @@
     <div
       class="container vh-100 d-flex justify-content-center align-items-center"
     >
+      <!-- Default Text -->
       <h3 class="default-text text-center">No Task to Display!</h3>
+      <!-- Loading Spinner -->
+      <div
+        id="loading-spinner"
+        class="spinner-border text-primary"
+        role="status"
+      ></div>
+      <!-- Task List -->
+      <div id="task-list" class="hidden"></div>
 
       <!-- Floating "New Task" Button -->
       <div class="float-button-container position-fixed bottom-0 end-0 p-3">
@@ -192,8 +201,6 @@
           </div>
         </div>
       </div>
-
-      <div class="task-list hidden"></div>
     </div>
 
     <!-- Bootstrap JS -->

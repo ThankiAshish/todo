@@ -1,10 +1,4 @@
-import {
-  getTasks,
-  getTaskById,
-  createTask,
-  updateTask,
-  deleteTask,
-} from "./task.js";
+import { getTasks, createTask, updateTask, deleteTask } from "./task.js";
 
 $(document).ready(function () {
   getTasks();

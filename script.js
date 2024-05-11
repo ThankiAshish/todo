@@ -31,6 +31,44 @@ $(document).ready(function () {
   $(".close").click(function () {
     $("#new-task-modal").modal("hide");
   });
+
+  // Edit Task functionality
+  $(document).on("click", ".edit-task-btn", function () {
+    var taskTitle = $(this).closest(".card").find(".card-title").text();
+    var taskDescription = $(this).closest(".card").find(".card-text").text();
+    var taskId = $(this).closest(".card").data("task-id"); // Get the task ID from the card
+
+    $("#edit-task-form").attr("data-task-id", taskId); // Set the task ID on the form
+
+    $("#editTaskName").val(taskTitle);
+    $("#editTaskDescription").val(taskDescription);
+
+    $("#edit-task-modal").modal("show");
+  });
+
+  $("#edit-task-form").submit(function (event) {
+    event.preventDefault(); // Prevent default form submission behavior
+
+    var taskId = $(this).data("task-id");
+    var taskName = $("#editTaskName").val();
+    var taskDescription = $("#editTaskDescription").val();
+
+    if (taskName === "" || taskDescription === "") {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    updateTask(taskId, taskName, taskDescription); // Call the updateTask function
+
+    $("#edit-task-modal").modal("hide"); // Hide the modal after processing
+  });
+
+  // Delete Task functionality
+  $(document).on("click", ".delete-task-btn", function () {
+    var taskId = $(this).data("task-id");
+
+    deleteTask(taskId); // Call the deleteTask function
+  });
 });
 
 const createTask = (taskName, taskDescription) => {
@@ -59,7 +97,6 @@ const getTasks = async () => {
     url: "https://api.nstack.in/v1/todos",
     method: "GET",
     success: function (response) {
-      console.log("Tasks fetched successfully:", response.items.length);
       if (response.items.length === 0) {
         $(".default-text").show();
         $(".task-list").addClass("hidden");
@@ -72,14 +109,14 @@ const getTasks = async () => {
         // Loop through the tasks and display them in the UI
         response.items.forEach((task) => {
           var taskCard = `
-            <div class="card">
+            <div class="card" data-task-id="${task._id}">
               <div class="card-body">
                 <h5 class="card-title">${task.title}</h5>
                 <p class="card-text">${task.description}</p>
               </div>
               <div class="card-footer">
-                <button class="btn btn-primary">Edit</button>
-                <button class="btn btn-danger">Delete</button>
+                <button data-task-id="${task._id}" class="btn btn-primary edit-task-btn">Edit</button>
+                <button data-task-id="${task._id}" class="btn btn-danger delete-task-btn">Delete</button>
               </div>
             </div>
           `;
@@ -89,6 +126,40 @@ const getTasks = async () => {
     },
     error: function (error) {
       console.error("Error fetching tasks:", error);
+      // Handle the error, like displaying an error message
+    },
+  });
+};
+
+const updateTask = (taskId, taskName, taskDescription) => {
+  $.ajax({
+    url: `https://api.nstack.in/v1/todos/${taskId}`,
+    method: "PUT",
+    data: {
+      title: taskName,
+      description: taskDescription,
+    },
+    success: function (response) {
+      console.log("Task updated successfully:", response);
+      getTasks();
+    },
+    error: function (error) {
+      console.error("Error updating task:", error);
+    },
+  });
+};
+
+const deleteTask = (taskId) => {
+  // Make a DELETE request to delete a task using the API
+  $.ajax({
+    url: `https://api.nstack.in/v1/todos/${taskId}`,
+    method: "DELETE",
+    success: function (response) {
+      console.log("Task deleted successfully:", response);
+      getTasks();
+    },
+    error: function (error) {
+      console.error("Error deleting task:", error);
       // Handle the error, like displaying an error message
     },
   });

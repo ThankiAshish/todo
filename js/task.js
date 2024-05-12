@@ -10,8 +10,8 @@ import {
 } from "./utils.js";
 
 const getTasks = async () => {
-  showSpinner();
   hideDefaultText();
+  showSpinner();
 
   try {
     const response = await fetch(API_ENDPOINT);

@@ -18,6 +18,9 @@ $(document).ready(function () {
     }
     createTask(taskName, taskDescription);
     $("#new-task-modal").modal("hide");
+
+    $("#taskName").val("");
+    $("#taskDescription").val("");
   });
 
   $(document).on("click", ".edit-task-btn", function () {
@@ -51,6 +54,10 @@ $(document).ready(function () {
     updateTask(taskId, taskName, taskDescription, taskIsCompleted);
 
     $("#edit-task-modal").modal("hide");
+
+    $("#editTaskName").val("");
+    $("#editTaskDescription").val("");
+    $("#editTaskIsCompleted").prop("checked", false);
   });
 
   $(document).on("click", ".delete-task-btn", function () {

@@ -33,6 +33,9 @@ const getTasks = async () => {
             <div class="card-body">
               <h5 class="card-title">${task.title}</h5>
               <p class="card-text">${task.description}</p>
+              <input type="hidden" value=${
+                task.is_completed
+              } id="task-completed"/>
             </div>
             <div class="card-footer">
               <button data-task-id="${

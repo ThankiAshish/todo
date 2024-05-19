@@ -27,13 +27,13 @@ $(document).ready(function () {
     var taskTitle = $(this).closest(".card").find(".card-title").text();
     var taskDescription = $(this).closest(".card").find(".card-text").text();
     var taskId = $(this).closest(".card").data("task-id");
-    var isCompleted = $(this).closest(".card").hasClass("completed");
+    var isCompleted = $(this).closest(".card").find("#task-completed").text();
 
     $("#edit-task-form").attr("data-task-id", taskId);
 
     $("#editTaskName").val(taskTitle);
     $("#editTaskDescription").val(taskDescription);
-    $("#editTaskIsCompleted").prop("checked", isCompleted);
+    $("#editTaskIsCompleted").val(isCompleted);
 
     $("#edit-task-modal").modal("show");
   });
@@ -44,7 +44,7 @@ $(document).ready(function () {
     const taskId = $(this).attr("data-task-id");
     var taskName = $("#editTaskName").val();
     var taskDescription = $("#editTaskDescription").val();
-    var taskIsCompleted = $("#editTaskIsCompleted").is(":checked");
+    var taskIsCompleted = $("#editTaskIsCompleted").val();
 
     if (taskName === "" || taskDescription === "") {
       alert("Please fill in all fields");
@@ -57,7 +57,7 @@ $(document).ready(function () {
 
     $("#editTaskName").val("");
     $("#editTaskDescription").val("");
-    $("#editTaskIsCompleted").prop("checked", false);
+    $("#editTaskIsCompleted").val("");
   });
 
   $(document).on("click", ".delete-task-btn", function () {
